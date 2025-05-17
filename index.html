@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Viewer</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="flashcard-app">
+        <h1>Flashcard</h1>
+        <div class="flashcard-container">
+            <div class="flashcard">
+                <div class="flashcard-face flashcard-front">
+                    <!-- Front content will go here -->
+                </div>
+                <div class="flashcard-face flashcard-back">
+                    <!-- Back content will go here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-indicator">
+            Card <span id="current-card-num">1</span> of <span id="total-cards-num">0</span>
+        </div>
+
+        <div class="controls">
+            <button id="dont-know-btn">Don't Know</button>
+            <button id="know-btn">Know</button>
+        </div>
+
+        <div class="results" style="display: none;">
+            <h2>Complete!</h2>
+            <p>You knew <span id="known-count">0</span> cards.</p>
+            <p>You didn't know <span id="unknown-count">0</span> cards.</p>
+            <button id="restart-btn">Restart</button>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
