@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashcard Viewer</title>
     <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body>
+<body>    
+    <div class="sidebar">
+        <h2> M A T T E R</h2>
+        <ul class="nav-links" id="nav-links">
+            <!-- matters menu will go here -->
+        </ul>
+    </div>        
     <div class="flashcard-app">
         <h1>Flashcard</h1>
         <div class="flashcard-container">
@@ -18,25 +25,27 @@
                     <!-- Back content will go here -->
                 </div>
             </div>
+            <div class="noflashcard"></div>
         </div>
 
-        <div class="progress-indicator">
-            Card <span id="current-card-num">1</span> of <span id="total-cards-num">0</span>
+        <div class="progress-indicator">            
+            <div>Card <span id="current-card-num">1</span> of <span id="total-cards-num">0</span></div>
         </div>
 
         <div class="controls">
-            <button id="dont-know-btn">Don't Know</button>
-            <button id="know-btn">Know</button>
+            <button id="dont-know-btn">Don't Know <i class="fa-regular fa-face-sad-tear"></i></button>
+            <button id="know-btn">Know <i class="fa-regular fa-face-smile"></i></button>
         </div>
 
-        <div class="results" style="display: none;">
-            <h2>Complete!</h2>
-            <p>You knew <span id="known-count">0</span> cards.</p>
-            <p>You didn't know <span id="unknown-count">0</span> cards.</p>
+        <div class="results">
+            <h2>Complete! <i class="fa-solid fa-trophy gold fa-2x"></i></h2>
+            <p class="known-count">You knew <span id="known-count">0</span> cards.</p>
+            <p class="unknown-count">You didn't know <span id="unknown-count">0</span> cards.</p>
             <button id="restart-btn">Restart</button>
         </div>
     </div>
 
+    <div class="copyright">Flashcard &copy; 2025 - by stefano pecoraro</div>
     <script src="index.js"></script>
 </body>
 </html>

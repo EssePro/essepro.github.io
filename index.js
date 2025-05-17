@@ -1,22 +1,47 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const flashcardsData = [
-        { front: "What is the capital of France?", back: "Paris" },
+    // in real app, data generation would be done on the server side
+    // and sent to the client
+    const user = {id: 1, name: "John Doe", email: "John@Doe@com"};
+    const flashcardsDataset = [ {matter: "math", flashcards: [
         { front: "What is 2 + 2?", back: "4" },
-        { front: "What is the chemical symbol for water?", back: "H₂O" },
-        { front: "Who wrote 'Romeo and Juliet'?", back: "William Shakespeare" },
-        { front: "What planet is known as the Red Planet?", back: "Mars" },
-        { front: "What is the largest ocean on Earth?", back: "Pacific Ocean" }
+        { front: "What is the square root of 16?", back: "4" },
+        { front: "What is the derivative of x^2?", back: "2x" },
+        { front: "What is the integral of 1/x?", back: "ln|x| + C" },
+        { front: "What is the value of pi?", back: "3.14" }]},
+        {matter: "chemistry", flashcards: [
+        { front: "What is the chemical symbol for water?", back: "H2O" },
+        { front: "What is the pH of pure water?", back: "7" },
+        { front: "What is the atomic number of carbon?", back: "6" },
+        { front: "What is the formula for glucose?", back: "C6H12O6" },
+        { front: "What is the main gas in Earth's atmosphere?", back: "Nitrogen (N2)" }]},
+        {matter: "geography", flashcards: [
+        { front: "What is the capital of France?", back: "Paris" },
+        { front: "Which continent is Egypt located in?", back: "Africa" },
+        { front: "What is the longest river in the world?", back: "Nile River" },
+        { front: "Which ocean is the largest?", back: "Pacific Ocean" },
+        { front: "What is the tallest mountain in the world?", back: "Mount Everest" }]}
     ];
 
+    const matterData = [
+        { icon: "fa-square-root-variable", id: "math", label: "math"}, 
+        { icon: "fa-flask-vial", id: "chemistry", label: "chemistry"},    
+        { icon: "fa-earth-europe", id: "geography", label: "geography"}, 
+    ];
+
+
+    let flashcardsData = [];
     let currentCardIndex = 0;
     let knownCards = 0;
     let unknownCards = 0;
     let isFlipped = false;
 
+    const navlinks = document.getElementById('nav-links');
+    const flashcardTitleEl = document.querySelector('.flashcard-app H1');
     const flashcardContainer = document.querySelector('.flashcard-container');
     const flashcardEl = document.querySelector('.flashcard');
     const frontFaceEl = document.querySelector('.flashcard-front');
     const backFaceEl = document.querySelector('.flashcard-back');
+    const noFlashcardEl = document.querySelector('.noflashcard');
     const knowBtn = document.getElementById('know-btn');
     const dontKnowBtn = document.getElementById('dont-know-btn');
     const currentCardNumEl = document.getElementById('current-card-num');
@@ -27,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const restartBtn = document.getElementById('restart-btn');
     const controlsEl = document.querySelector('.controls');
     const progressIndicatorEl = document.querySelector('.progress-indicator');
+    const progressBarEl = document.querySelector('.progress-indicator div');
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -44,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         frontFaceEl.textContent = card.front;
         backFaceEl.textContent = card.back;
         currentCardNumEl.textContent = index + 1;
+        progressBarEl.style.width = `${((index + 1) / flashcardsData.length) * 100}%`;
         isFlipped = false;
         flashcardEl.classList.remove('is-flipped');
     }
@@ -62,13 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentCardIndex++;
         if (currentCardIndex < flashcardsData.length) {
-            // Small delay to allow unflip animation if card was flipped
             if (isFlipped) {
-                 // Unflip smoothly before changing content
                 flashcardEl.classList.remove('is-flipped');
                 setTimeout(() => {
                     loadCard(currentCardIndex);
-                }, 300); // Half of transition time
+                }, 300);
             } else {
                 loadCard(currentCardIndex);
             }
@@ -91,26 +116,39 @@ document.addEventListener('DOMContentLoaded', () => {
         knownCards = 0;
         unknownCards = 0;
         isFlipped = false;
-        shuffleArray(flashcardsData); // Shuffle for a new order
-        loadCard(currentCardIndex);
-
-        flashcardContainer.style.display = 'block'; // Or 'flex' if needed by inner styles
-        controlsEl.style.display = 'flex';
-        progressIndicatorEl.style.display = 'block';
+        flashcardContainer.style.display = 'block';
         resultsEl.style.display = 'none';
+
+        if (flashcardsData.length === 0) {
+            flashcardEl.style.display = 'none';
+            noFlashcardEl.innerHTML = `hello <b>${user.name}</b>, 
+            <br>select matter on the left menu
+            <br>to start the learning session 
+            <br><br><i class="fa-solid fa-3x fa-user-graduate"></i>`;
+            noFlashcardEl.style.display = 'block';
+            controlsEl.style.display = 'none';
+            progressIndicatorEl.style.display = 'none';
+        } else {
+            totalCardsNumEl.textContent = flashcardsData.length;
+            shuffleArray(flashcardsData);
+            loadCard(currentCardIndex);
+            flashcardEl.style.display = 'block';
+            noFlashcardEl.style.display = 'none';
+            controlsEl.style.display = 'flex';
+            progressIndicatorEl.style.display = 'block';
+        }
     }
 
     // Event Listeners
     flashcardContainer.addEventListener('click', flipCard);
 
     knowBtn.addEventListener('click', () => {
-        if (!isFlipped) flipCard(); // Reveal answer if not already shown
-        // Give a moment to see the answer before moving to next card
+        if (!isFlipped) flipCard();
         setTimeout(() => nextCard(true), isFlipped ? 500 : 1000);
     });
 
     dontKnowBtn.addEventListener('click', () => {
-        if (!isFlipped) flipCard(); // Reveal answer
+        if (!isFlipped) flipCard();
         setTimeout(() => nextCard(false), isFlipped ? 500 : 1000);
     });
 
@@ -118,15 +156,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial Setup
     function initialize() {
-        if (flashcardsData.length === 0) {
-            flashcardContainer.innerHTML = "<p>No flashcards available.</p>";
-            controlsEl.style.display = 'none';
-            progressIndicatorEl.style.display = 'none';
-            return;
-        }
-        shuffleArray(flashcardsData);
-        totalCardsNumEl.textContent = flashcardsData.length;
-        loadCard(currentCardIndex);
+        navlinks.innerHTML = matterData.map(item => `
+            <li>
+                <i class="fa-solid ${item.icon}"></i>
+                <input type="radio" name="matter" id="${item.id}" />
+                <label for="${item.id}">${item.label}</label>
+            </li>
+        `).join('');
+
+        document.querySelectorAll('input[name="matter"]').forEach(input => {
+            input.addEventListener('change', (event) => {
+                const selectedMatter = event.target.id;
+                const item = matterData.find(dataset => dataset.id === selectedMatter);
+                flashcardTitleEl.innerHTML = `${item.label.toUpperCase()}<br><i class="fa-solid ${item.icon}"></i>`;
+                flashcardsData = flashcardsDataset.find(dataset => dataset.matter === selectedMatter).flashcards;
+                restartQuiz();
+            });
+        });
+        restartQuiz();        
     }
 
     initialize();
